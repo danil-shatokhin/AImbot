@@ -6,6 +6,7 @@
 class EntityManager
 {
     QVector<Entity> m_entities;
+
 public:
     EntityManager();
 };

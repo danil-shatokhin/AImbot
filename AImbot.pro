@@ -24,3 +24,6 @@ HEADERS  += mainwindow.h \
     entity.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    cards.json

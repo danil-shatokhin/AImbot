@@ -65,6 +65,11 @@ int Entity::getCurrentHealth() const
     return m_max_health - m_damage_taken;
 }
 
+void Entity::AddTag( QString tag, QString value )
+{
+    m_additional_data[tag] = value;
+}
+
 Entity::Entity()
 {
 

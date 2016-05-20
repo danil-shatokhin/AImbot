@@ -17,7 +17,8 @@ class Entity
         Type_INVALID,
         Type_MINION,
         Type_SPELL,
-        Type_SECRET
+        Type_SECRET,
+        Type_PLAYER
     };
 
     enum Owner
@@ -26,6 +27,8 @@ class Entity
         Owner_Enemy,
         Owner_count
     };
+
+
 
     enum Zone
     {
@@ -36,6 +39,7 @@ class Entity
         Zone_count
     };
 
+    QMap<QString, QString> m_additional_data;
     int m_id;
     Owner m_owner;
     Zone m_zone;
@@ -60,7 +64,8 @@ public:
     int getMax_health() const;
     int getDamage() const;
     int getCurrentHealth() const;
-    void setDamageTaken(int damage_taken);
+    //void setDamageTaken(int damage_taken);
+    void AddTag( QString tag, QString value );
 };
 
 #endif // ENTITY_H
