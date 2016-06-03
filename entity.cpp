@@ -1,73 +1,48 @@
 #include "entity.h"
 
-int Entity::id() const
+QString Entity::id() const
 {
-    return m_id;
+    return m_tags["id"];
 }
 
-void Entity::setId(int id)
+QString Entity::card_id() const
 {
-    m_id = id;
+    return m_tags["cardid"];
 }
 
-Owner Entity::owner() const
+QString Entity::owner() const
 {
-    return m_owner;
+    return m_tags["owner"];
 }
 
-void Entity::setOwner(const Owner &owner)
+QString Entity::zone() const
 {
-    m_owner = owner;
-}
-
-Zone Entity::zone() const
-{
-    return m_zone;
-}
-
-void Entity::setZone(const Zone &zone)
-{
-    m_zone = zone;
-}
-
-int Entity::getAttack_this_turn() const
-{
-    return attack_this_turn;
-}
-
-void Entity::setAttack_this_turn(int value)
-{
-    attack_this_turn = value;
+    return m_tags["zone"];
 }
 
 QString Entity::getName() const
 {
-    return m_name;
-}
-
-void Entity::setName(const QString &name)
-{
-    m_name = name;
+    return m_tags["name"];
 }
 
 int Entity::getMax_health() const
 {
-    return m_max_health;
+    return m_tags["max_health"].toInt();
 }
 
 int Entity::getDamage() const
 {
-    return m_damage;
+    return m_tags["damage_taken"].toInt();
 }
 
 int Entity::getCurrentHealth() const
 {
-    return m_max_health - m_damage_taken;
+    return m_tags["max_health"].toInt() - m_tags["damage_taken"].toInt();
 }
 
 void Entity::AddTag( QString tag, QString value )
 {
-    m_additional_data[tag] = value;
+    m_tags[tag] = value;
 }
 
 Entity::Entity()
