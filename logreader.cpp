@@ -5,40 +5,49 @@
 LogReader::LogReader(QString filename)
     : m_log_file(filename), m_current_line(0)
 {
-    Update();
-    QString data = m_log_file.readAll();
-    Parse(data.split("\n"));
 }
 
 void LogReader::Update()
 {
-    QString buff = m_log_file.readAll();
-    QStringList data = buff.split("\n");
-    data.erase(data.begin(), data.begin()+m_current_line);
-
-    auto it=data.begin();
-    while (it!=data.end())
+    QString buff;
+    if (m_log_file.open(QIODevice::ReadOnly))
     {
-        if (!(*it).startsWith("[Power]"))
-            data.erase(it);
-        ++it;
+        buff = m_log_file.readAll();
+        m_log_file.close();
     }
 
-    Parse(data);
+    QStringList data = buff.split("\n");
+    QStringList power_data;
+    for (int i=0; i<data.size(); i++)
+    {
+        if (data.at(i).startsWith("[Power]"))
+            power_data.append(data.at(i));
+    }
+
+    /*int i = 0;
+    while(i != m_current_line || data.size())
+    {
+        data.erase(data.begin());
+        i++;
+    }*/
+
+    Parse(power_data);
 }
 
 void LogReader::Parse(QStringList data)
 {
-    int i = 0;
+    qDebug() << "Parse start from " << m_current_line;
+    int i = m_current_line;
     while( i != data.size())
     {
-        QString line = data.at(i).mid(37).trimmed();
+        QString line = data.at(i);
+        line = line.mid( line.indexOf("-")+1 ).trimmed();
         if (line.startsWith("GameEntity"))
         {
             QMap <QString, QString> map;
 
             map["type"] = "GAME_ENTITY";
-            map["id"] = Aquire(line, "EntityID=");
+            map["entity_id"] = Aquire(line, "EntityID=");
 
             int j = ++i;
             while (data.at(j).startsWith("tag="))
@@ -49,73 +58,92 @@ void LogReader::Parse(QStringList data)
                 j = ++i;
             }
             ReportNewEntity( map );
+            i = j;
         }
-        if (line.startsWith("Player"))
+        else if (line.startsWith("Player"))
         {
             //new player or game
             QMap <QString, QString> map;
             map["type"] = "PLAYER";
-            map["id"] = Aquire(line, "EntityID=");
-
-            if ()
-            QString card_id = Aquire(line, "CardID=");
-
-            map["card_id"] = card_id;
+            map["entity_id"] = Aquire(line, "EntityID=");
+            map["player_id"] = Aquire(line, "PlayerID=");
+            map["game_account_id"]= Aquire(line, "hi=") + QString("_") + Aquire(line, "lo=");
 
             int j = ++i;
             while (data.at(j).startsWith("tag="))
             {
-                QString tag = Aquire( data.at(j), "tag=" );
+                QString tag = Aquire( data.at(j), "tag=" ).toLower();
                 QString value = Aquire( data.at(j), "value=" );
                 map[tag] = value;
                 j = ++i;
             }
             ReportNewEntity( map );
+            i = j;
         }
-        else if (line.startsWith("FULL_ENTITY"))
+        else if (line.startsWith("FULL_ENTITY") && !line.contains("Updating"))
         {
-            //new entity
-            QMap <QString, QString> map;
-            map["type"] = "CARD";
-            map["id"] = Aquire(line, "ID=");
-            map["card_id"] = Aquire(line, "CardID=");
-
-            int j = ++i;
-            while (data.at(j).startsWith("tag"))
+            if (line.contains("Updating"))
             {
-                QString tag = Aquire( data.at(j), "tag=" );
-                QString value = Aquire( data.at(j), "value=" );
-                map[tag] = value;
-                j = ++i;
+                QString id = Aquire(line, "id=");
+
+                int j = ++i;
+                while (data.at(j).startsWith("tag="))
+                {
+                    QString tag_name = Aquire(data.at(j), "tag=").toLower();
+                    QString value = Aquire(data.at(j), "value=");
+                    emit EntityUpdate( id, tag_name, value );
+                    j = ++i;
+                }
+                i = j;
             }
-            ReportNewEntity( map );
+            else
+            {
+                //new entity
+                QMap <QString, QString> map;
+                map["cardtype"] = "CARD";
+                map["entity_id"] = Aquire(line, "id=");
+                map["cardid"] = Aquire(line, "cardId=");
+                map["player"] = Aquire(line, "player=");
+
+                int j = ++i;
+                while (data.at(j).contains("tag="))
+                {
+                    QString tag = Aquire( data.at(j), "tag=" ).toLower();
+                    QString value = Aquire( data.at(j), "value=" );
+                    map[tag] = value;
+                    j = ++i;
+                }
+                ReportNewEntity( map );
+                i = j;
+            }
         }
         else if (line.startsWith("SHOW_ENTITY"))
         {
             //entity update
             QString entity_id = Aquire(line, "id=");
 
-            QString card_id = Aquire(line, "CardID=");
+            QString card_id = Aquire(line, "cardId=");
             emit EntityUpdate(entity_id, "cardid", card_id);
 
             int j = ++i;
             while (data.at(j).startsWith("tag="))
             {
-                QString tag_name = Aquire(data.at(j), "tag=");
+                QString tag_name = Aquire(data.at(j), "tag=").toLower();
                 QString value = Aquire(data.at(j), "value=");
                 emit EntityUpdate( entity_id, tag_name, value );
                 j = ++i;
             }
+            i = j;
         }
         else if (line.startsWith("TAG_CHANGE"))
         {
             //parse block data
-            QString tag_name = Aquire(line, "tag=");
+            QString tag_name = Aquire(line, "tag=").toLower();
             QString value = Aquire( line, "value=" );
             if (line.contains("id="))
             {
                 QString id = Aquire(line, "id=");
-                emit EntityUpdate( id.toInt(), tag_name, value );
+                emit EntityUpdate( id, tag_name, value );
             }
             else
             {
@@ -126,25 +154,38 @@ void LogReader::Parse(QStringList data)
         }
         else
         {
-            qDebug() << "UNKNWN LINE: " << line;
+            //qDebug() << "UNKNWN LINE: " << line;
             i++;
         }
     }
     m_current_line = i;
+    qDebug() << "Parse ends at " << m_current_line;
 }
 
 QString LogReader::Aquire(QString line, QString tag_name)
 {
-    int begin = data.at(j).indexOf("tag=") + QString("tag").size();
-    return data.at(j).mid(begin, data.at(j).indexOf(" "), begin);
+    //qDebug() << "Aquire " << tag_name << "in" << line;
+    int begin = line.indexOf(tag_name, 0, Qt::CaseInsensitive);
+    if (begin == -1)
+        return "";
+    else
+        begin += tag_name.size();
+    QString res = line.mid(begin, line.indexOf(" ", begin, Qt::CaseInsensitive) - begin);
+    if (res.endsWith(']'))
+        res.chop(1);
+    //qDebug() << "RES: " << res;
+    return res.trimmed();
 }
 
 void LogReader::ReportNewEntity( QMap<QString, QString>& data )
 {
+    //qDebug() << "LogReader::ReportNewEntity: " << data["entity_id"];
     Entity e;
-    foreach( QPair<QString, QString> p, data )
+    auto it = data.begin();
+    while (it!=data.end())
     {
-        e.AddTag(p.first, p.second);
+        e.AddTag(it.key(), it.value());
+        it++;
     }
 
     emit NewEntity(e);

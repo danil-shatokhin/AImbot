@@ -16,14 +16,17 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     logreader.cpp \
     entitymanager.cpp \
-    entity.cpp
+    entity.cpp \
+    entitywidget.cpp
 
 HEADERS  += mainwindow.h \
     logreader.h \
     entitymanager.h \
-    entity.h
+    entity.h \
+    entitywidget.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    entitywidget.ui
 
 DISTFILES += \
     cards.json

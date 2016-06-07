@@ -2,9 +2,12 @@
 #define LOGREADER_H
 #include <entity.h>
 #include <QFile>
+#include <QDebug>
 
-class LogReader
+class LogReader : public QObject
 {
+    Q_OBJECT
+
     QFile m_log_file;
     int m_current_line;
 public:
@@ -17,8 +20,8 @@ private:
     void ReportNewEntity( QMap<QString, QString>& data );
 
 signals:
-    void NewEntity(Entity &e);
-    void EntityUpdate( int id, QString tag, QString new_value );
+    void NewEntity(Entity e);
+    void EntityUpdate( QString id, QString tag, QString new_value );
     void GlobalEntityUpdate( QString name, QString tag, QString value );
 };
 

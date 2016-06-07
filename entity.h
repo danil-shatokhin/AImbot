@@ -5,8 +5,6 @@
 
 class Entity
 {
-public:
-
 private:
     QMap<QString, QString> m_tags;
 
@@ -23,6 +21,8 @@ public:
     int getCurrentHealth() const;
     //void setDamageTaken(int damage_taken);
     void AddTag( QString tag, QString value );
+    QString GetTag( QString key );
+    QString GetInfo();
 };
 
 #endif // ENTITY_H

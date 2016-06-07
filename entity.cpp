@@ -45,6 +45,23 @@ void Entity::AddTag( QString tag, QString value )
     m_tags[tag] = value;
 }
 
+QString Entity::GetTag(QString key)
+{
+    return m_tags[key];
+}
+
+QString Entity::GetInfo()
+{
+    QString res;
+    auto it = m_tags.begin();
+    while (it!=m_tags.end())
+    {
+        res += it.key() + QString(": ") + it.value() + QString("\n");
+        it++;
+    }
+    return res;
+}
+
 Entity::Entity()
 {
 
