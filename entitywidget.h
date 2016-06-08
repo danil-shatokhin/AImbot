@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QMessageBox>
+#include <entity.h>
 
 namespace Ui {
 class EntityWidget;
@@ -11,11 +12,11 @@ class EntityWidget;
 class EntityWidget : public QWidget
 {
     Q_OBJECT
-    QString m_text;
+    Entity m_entity;
 
 public:
     explicit EntityWidget(QWidget *parent = 0);
-    void SetText(QString text);
+    void SetEntity(Entity entity);
     ~EntityWidget();
 
 private slots:

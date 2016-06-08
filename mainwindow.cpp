@@ -5,7 +5,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_log_reader("C:/Program Files (x86)/Hearthstone/Hearthstone_Data/output_log.txt")
+    m_log_reader("C:/Games/Hearthstone/Hearthstone_Data/output_log.txt")
 {
     ui->setupUi(this);
 
@@ -43,8 +43,8 @@ void MainWindow::UpdateUI()
     foreach(Entity e, ally_board)
     {
         EntityWidget *w = new EntityWidget(ui->ally_board_widget);
-        w->SetText(e.GetInfo());
-        w->setGeometry(i*50, 0, 50, 50 );
+        w->SetEntity(e);
+        w->setGeometry(i*50, 0, 50, 75 );
         w->show();
         i++;
     }
@@ -60,8 +60,8 @@ void MainWindow::UpdateUI()
     foreach(Entity e, ally_hand)
     {
         EntityWidget *w = new EntityWidget(ui->ally_hand_widget);
-        w->SetText(e.GetInfo());
-        w->setGeometry(i*50, 0, 50, 50 );
+        w->SetEntity(e);
+        w->setGeometry(i*50, 0, 50, 75 );
         w->show();
         i++;
     }
@@ -77,8 +77,8 @@ void MainWindow::UpdateUI()
     foreach(Entity e, enemy_board)
     {
         EntityWidget *w = new EntityWidget(ui->enemy_board_widget);
-        w->SetText(e.GetInfo());
-        w->setGeometry(i*50, 0, 50, 50 );
+        w->SetEntity(e);
+        w->setGeometry(i*50, 0, 50, 75 );
         w->show();
         i++;
     }
@@ -94,8 +94,8 @@ void MainWindow::UpdateUI()
     foreach(Entity e, enemy_hand)
     {
         EntityWidget *w = new EntityWidget(ui->enemy_hand_widget);
-        w->SetText(e.GetInfo());
-        w->setGeometry(i*50, 0, 50, 50 );
+        w->SetEntity(e);
+        w->setGeometry(i*50, 0, 50, 75 );
         w->show();
         i++;
     }
@@ -104,9 +104,9 @@ void MainWindow::UpdateUI()
 
     qDebug() << ally_hand.size() << ally_board.size() << enemy_board.size() << enemy_board.size();
 
-    ui->ally_hero_widget->SetText(m_manager.GetAllyHero().GetInfo());
-    ui->enemy_hero_widget->SetText(m_manager.GetEnemyHero().GetInfo());
-    ui->game_widget->SetText(m_manager.GetGameEntity().GetInfo());
+    ui->ally_hero_widget->SetEntity(m_manager.GetAllyHero());
+    ui->enemy_hero_widget->SetEntity(m_manager.GetEnemyHero());
+    ui->game_widget->SetEntity(m_manager.GetGameEntity());
 }
 
 void MainWindow::OnNewEntity(Entity e)

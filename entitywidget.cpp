@@ -8,9 +8,28 @@ EntityWidget::EntityWidget(QWidget *parent) :
     ui->setupUi(this);
 }
 
-void EntityWidget::SetText(QString text)
+void EntityWidget::SetEntity(Entity entity)
 {
-    m_text = text;
+    m_entity = entity;
+
+    if (m_entity.GetTag("cardtype") == "MINION")
+    {
+        ui->atk_lbl->setText(m_entity.GetTag("atk"));
+        ui->hp_lbl->setText(m_entity.GetTag("health"));
+        ui->name_lbl->setText(m_entity.GetTag("cardid"));
+    }
+    else if (m_entity.GetTag("cardtype") == "SPELL")
+    {
+        ui->atk_lbl->setText("SP");
+        ui->hp_lbl->setText("ELL");
+        ui->name_lbl->setText(m_entity.GetTag("cardid"));
+    }
+    else
+    {
+        ui->atk_lbl->setText("");
+        ui->hp_lbl->setText("");
+        ui->name_lbl->setText(m_entity.GetTag("cardtype"));
+    }
 }
 
 EntityWidget::~EntityWidget()
@@ -20,5 +39,5 @@ EntityWidget::~EntityWidget()
 
 void EntityWidget::on_pushButton_clicked()
 {
-    QMessageBox::about(0, "INFO", m_text);
+    QMessageBox::about(0, "INFO", m_entity.GetInfo());
 }

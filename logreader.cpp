@@ -50,12 +50,16 @@ void LogReader::Parse(QStringList data)
             map["entity_id"] = Aquire(line, "EntityID=");
 
             int j = ++i;
-            while (data.at(j).startsWith("tag="))
+            QString j_line = data.at(j);
+            j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
+            while (j_line.startsWith("tag="))
             {
                 QString tag = Aquire( data.at(j), "tag=" );
                 QString value = Aquire( data.at(j), "value=" );
                 map[tag] = value;
                 j = ++i;
+                j_line = data.at(j);
+                j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
             }
             ReportNewEntity( map );
             i = j;
@@ -70,29 +74,37 @@ void LogReader::Parse(QStringList data)
             map["game_account_id"]= Aquire(line, "hi=") + QString("_") + Aquire(line, "lo=");
 
             int j = ++i;
-            while (data.at(j).startsWith("tag="))
+            QString j_line = data.at(j);
+            j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
+            while (j_line.startsWith("tag="))
             {
-                QString tag = Aquire( data.at(j), "tag=" ).toLower();
+                QString tag = Aquire( data.at(j), "tag=" );
                 QString value = Aquire( data.at(j), "value=" );
                 map[tag] = value;
                 j = ++i;
+                j_line = data.at(j);
+                j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
             }
             ReportNewEntity( map );
             i = j;
         }
-        else if (line.startsWith("FULL_ENTITY") && !line.contains("Updating"))
+        else if (line.startsWith("FULL_ENTITY"))
         {
             if (line.contains("Updating"))
             {
                 QString id = Aquire(line, "id=");
 
                 int j = ++i;
-                while (data.at(j).startsWith("tag="))
+                QString j_line = data.at(j);
+                j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
+                while (j_line.startsWith("tag="))
                 {
-                    QString tag_name = Aquire(data.at(j), "tag=").toLower();
-                    QString value = Aquire(data.at(j), "value=");
-                    emit EntityUpdate( id, tag_name, value );
+                    QString tag = Aquire( data.at(j), "tag=" );
+                    QString value = Aquire( data.at(j), "value=" );
+                    emit EntityUpdate( id, tag, value );
                     j = ++i;
+                    j_line = data.at(j);
+                    j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
                 }
                 i = j;
             }
@@ -106,12 +118,16 @@ void LogReader::Parse(QStringList data)
                 map["player"] = Aquire(line, "player=");
 
                 int j = ++i;
-                while (data.at(j).contains("tag="))
+                QString j_line = data.at(j);
+                j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
+                while (j_line.startsWith("tag="))
                 {
-                    QString tag = Aquire( data.at(j), "tag=" ).toLower();
+                    QString tag = Aquire( data.at(j), "tag=" );
                     QString value = Aquire( data.at(j), "value=" );
                     map[tag] = value;
                     j = ++i;
+                    j_line = data.at(j);
+                    j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
                 }
                 ReportNewEntity( map );
                 i = j;
@@ -126,12 +142,16 @@ void LogReader::Parse(QStringList data)
             emit EntityUpdate(entity_id, "cardid", card_id);
 
             int j = ++i;
-            while (data.at(j).startsWith("tag="))
+            QString j_line = data.at(j);
+            j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
+            while (j_line.startsWith("tag="))
             {
-                QString tag_name = Aquire(data.at(j), "tag=").toLower();
-                QString value = Aquire(data.at(j), "value=");
-                emit EntityUpdate( entity_id, tag_name, value );
+                QString tag = Aquire( data.at(j), "tag=" );
+                QString value = Aquire( data.at(j), "value=" );
+                emit EntityUpdate( entity_id, tag, value );
                 j = ++i;
+                j_line = data.at(j);
+                j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
             }
             i = j;
         }
@@ -154,7 +174,7 @@ void LogReader::Parse(QStringList data)
         }
         else
         {
-            //qDebug() << "UNKNWN LINE: " << line;
+            qDebug() << "UNKNWN LINE: " << line;
             i++;
         }
     }
