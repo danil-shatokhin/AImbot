@@ -3,9 +3,12 @@
 #include <entity.h>
 #include <QVector>
 #include <QDebug>
+#include <QObject>
 
-class EntityManager
+class EntityManager : public QObject
 {
+    Q_OBJECT
+
     const QString m_deathwing_account_id;
     QVector<Entity> m_entities;
     Entity m_game_entity;
@@ -24,12 +27,14 @@ public:
     QVector<Entity> GetEnemyHand();
     QVector<Entity> GetEnemyBoard();
 
-    //bool sort_by_zone_pos(const Entity& e1, const Entity& e2);
-
     void Clear();
     void NewEntity(Entity e);
     void EntityUpdate( QString id, QString tag, QString new_value );
     void GlobalEntityUpdate( QString name, QString tag, QString value );
+
+signals:
+    void TurnStart(bool my_turn);
+    void TurnOver();
 };
 
 #endif // ENTITYMANAGER_H

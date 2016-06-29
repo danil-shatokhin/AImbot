@@ -5,7 +5,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_log_reader("C:/Games/Hearthstone/Hearthstone_Data/output_log.txt")
+    m_log_reader("C:/Program Files (x86)/Hearthstone/Hearthstone_Data/output_log.txt")
+
 {
     ui->setupUi(this);
 

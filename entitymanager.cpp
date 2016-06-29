@@ -60,6 +60,15 @@ void EntityManager::GlobalEntityUpdate(QString name, QString tag, QString value)
     if (name == "GameEntity")
     {
         m_game_entity.AddTag(tag, value);
+
+        if (tag == "STEP")
+        {
+            if (value == "MAIN_ACTION")
+                emit TurnStart( (m_game_entity.GetTag("").toInt() + m_ally_hero.GetTag("first") == 0)%2 );
+            else if (m_game_entity.GetTag("step") == "MAIN_ACTION")
+                emit TurnOver();
+        }
+
         if (m_game_entity.GetTag("state") == "COMPLETE")
             Clear();
     }

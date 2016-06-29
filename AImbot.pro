@@ -28,5 +28,4 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     entitywidget.ui
 
-DISTFILES += \
-    cards.json
+DISTFILES +=
