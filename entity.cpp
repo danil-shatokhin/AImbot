@@ -2,7 +2,7 @@
 
 QString Entity::id() const
 {
-    return m_tags["id"];
+    return m_tags["entity_id"];
 }
 
 QString Entity::card_id() const

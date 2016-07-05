@@ -37,8 +37,9 @@ void LogReader::Update()
 void LogReader::Parse(QStringList data)
 {
     qDebug() << "Parse start from " << m_current_line;
+    int top = data.size();
     int i = m_current_line;
-    while( i != data.size())
+    while( i < data.size())
     {
         QString line = data.at(i);
         line = line.mid( line.indexOf("-")+1 ).trimmed();
@@ -46,13 +47,13 @@ void LogReader::Parse(QStringList data)
         {
             QMap <QString, QString> map;
 
-            map["type"] = "GAME_ENTITY";
+            //map["type"] = "game_enti";
             map["entity_id"] = Aquire(line, "EntityID=");
 
             int j = ++i;
             QString j_line = data.at(j);
             j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
-            while (j_line.startsWith("tag="))
+            while (j < top && j_line.startsWith("tag="))
             {
                 QString tag = Aquire( data.at(j), "tag=" );
                 QString value = Aquire( data.at(j), "value=" );
@@ -76,7 +77,7 @@ void LogReader::Parse(QStringList data)
             int j = ++i;
             QString j_line = data.at(j);
             j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
-            while (j_line.startsWith("tag="))
+            while (j < top && j_line.startsWith("tag="))
             {
                 QString tag = Aquire( data.at(j), "tag=" );
                 QString value = Aquire( data.at(j), "value=" );
@@ -97,7 +98,7 @@ void LogReader::Parse(QStringList data)
                 int j = ++i;
                 QString j_line = data.at(j);
                 j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
-                while (j_line.startsWith("tag="))
+                while (j < top && j_line.startsWith("tag="))
                 {
                     QString tag = Aquire( data.at(j), "tag=" );
                     QString value = Aquire( data.at(j), "value=" );
@@ -120,7 +121,7 @@ void LogReader::Parse(QStringList data)
                 int j = ++i;
                 QString j_line = data.at(j);
                 j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
-                while (j_line.startsWith("tag="))
+                while (j < top && j_line.startsWith("tag="))
                 {
                     QString tag = Aquire( data.at(j), "tag=" );
                     QString value = Aquire( data.at(j), "value=" );
@@ -139,12 +140,13 @@ void LogReader::Parse(QStringList data)
             QString entity_id = Aquire(line, "id=");
 
             QString card_id = Aquire(line, "cardId=");
-            emit EntityUpdate(entity_id, "cardid", card_id);
+            if (card_id != "")
+                emit EntityUpdate(entity_id, "cardid", card_id);
 
             int j = ++i;
             QString j_line = data.at(j);
             j_line = j_line.mid( j_line.indexOf("-")+1 ).trimmed();
-            while (j_line.startsWith("tag="))
+            while (j < top && j_line.startsWith("tag="))
             {
                 QString tag = Aquire( data.at(j), "tag=" );
                 QString value = Aquire( data.at(j), "value=" );
@@ -194,7 +196,7 @@ QString LogReader::Aquire(QString line, QString tag_name)
     if (res.endsWith(']'))
         res.chop(1);
     //qDebug() << "RES: " << res;
-    return res.trimmed();
+    return res.trimmed().toLower();
 }
 
 void LogReader::ReportNewEntity( QMap<QString, QString>& data )

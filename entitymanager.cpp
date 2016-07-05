@@ -2,11 +2,12 @@
 
 inline bool sort_by_zone_pos(Entity &e1, Entity &e2)
 {
-    return e1.GetTag("zonepos") < e2.GetTag("zonepos");
+    return e1.GetTag("zone_position") < e2.GetTag("zone_position");
 }
 
 EntityManager::EntityManager() :
-    m_deathwing_account_id("144115198130930503_19625017")
+    m_deathwing_account_id("144115198130930503_19625017"),
+    m_turn_counter(0)
 {
 
 }
@@ -45,6 +46,7 @@ void EntityManager::NewEntity(Entity e)
 
 void EntityManager::EntityUpdate(QString id, QString tag, QString new_value)
 {
+    qDebug() << "ENTITY UPDATE" << id << tag << new_value;
     for (int i=0; i<m_entities.size(); i++)
     {
         if (m_entities[i].id() == id)
@@ -57,22 +59,27 @@ void EntityManager::EntityUpdate(QString id, QString tag, QString new_value)
 
 void EntityManager::GlobalEntityUpdate(QString name, QString tag, QString value)
 {
-    if (name == "GameEntity")
+    //qDebug() << name << tag << value;
+    if (name == "gameentity")
     {
-        m_game_entity.AddTag(tag, value);
-
-        if (tag == "STEP")
+        if (tag == "turn")
         {
-            if (value == "MAIN_ACTION")
-                emit TurnStart( (m_game_entity.GetTag("").toInt() + m_ally_hero.GetTag("first") == 0)%2 );
-            else if (m_game_entity.GetTag("step") == "MAIN_ACTION")
-                emit TurnOver();
+            if (value.toInt() > m_turn_counter)
+            {
+                emit TurnStart( (value.toInt() + (m_ally_hero.GetTag("first_player") == "1"))%2 == 0 );
+                    m_turn_counter = value.toInt();
+            }
         }
 
-        if (m_game_entity.GetTag("state") == "COMPLETE")
+        if (m_game_entity.GetTag("state") == "complete")
+        {
             Clear();
+            emit GameOver();
+        }
+
+        m_game_entity.AddTag(tag, value);
     }
-    else if (name == "Deathwing")
+    else if (name == "deathwing")
     {
         m_ally_hero.AddTag(tag, value);
     }
@@ -99,14 +106,16 @@ Entity EntityManager::GetGameEntity()
 
 QVector<Entity> EntityManager::GetAllyHand()
 {
+    qDebug() << "ALLY HAND";
     QVector<Entity> res;
     QString ally_id = m_ally_hero.GetTag("controller");
     for (int i=0; i<m_entities.size(); i++)
     {
-        //qDebug() << m_entities[i].GetTag("entity_id") << m_entities[i].GetTag("controller") << m_entities[i].GetTag("zone");
-
-        if (m_entities[i].GetTag("controller") == ally_id && m_entities[i].GetTag("zone")=="HAND")
+        if (m_entities[i].GetTag("controller") == ally_id && m_entities[i].GetTag("zone")=="hand")
+        {
             res.push_back(m_entities[i]);
+            qDebug() << m_entities[i].GetTag("entity_id") << m_entities[i].GetTag("controller") << m_entities[i].GetTag("zone");
+        }
     }
     std::sort(res.begin(), res.end(), sort_by_zone_pos);
     return res;
@@ -118,7 +127,7 @@ QVector<Entity> EntityManager::GetAllyBoard()
     QString ally_id = m_ally_hero.GetTag("controller");
     for (int i=0; i<m_entities.size(); i++)
     {
-        if (m_entities[i].GetTag("controller") == ally_id && m_entities[i].GetTag("zone")=="PLAY")
+        if (m_entities[i].GetTag("controller") == ally_id && m_entities[i].GetTag("zone")=="play" && m_entities[i].GetTag("cardtype")!="enchantment")
             res.push_back(m_entities[i]);
     }
     std::sort(res.begin(), res.end(), sort_by_zone_pos);
@@ -131,7 +140,7 @@ QVector<Entity> EntityManager::GetEnemyHand()
     QString enemy_id = m_enemy_hero.GetTag("controller");
     for (int i=0; i<m_entities.size(); i++)
     {
-        if (m_entities[i].GetTag("controller") == enemy_id && m_entities[i].GetTag("zone")=="HAND")
+        if (m_entities[i].GetTag("controller") == enemy_id && m_entities[i].GetTag("zone")=="hand")
             res.push_back(m_entities[i]);
     }
     std::sort(res.begin(), res.end(), sort_by_zone_pos);
@@ -144,7 +153,7 @@ QVector<Entity> EntityManager::GetEnemyBoard()
     QString enemy_id = m_enemy_hero.GetTag("controller");
     for (int i=0; i<m_entities.size(); i++)
     {
-        if (m_entities[i].GetTag("controller") == enemy_id && m_entities[i].GetTag("zone")=="PLAY")
+        if (m_entities[i].GetTag("controller") == enemy_id && m_entities[i].GetTag("zone")=="play" && m_entities[i].GetTag("cardtype")!="enchantment")
             res.push_back(m_entities[i]);
     }
     std::sort(res.begin(), res.end(), sort_by_zone_pos);

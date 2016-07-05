@@ -15,6 +15,8 @@ class EntityManager : public QObject
     Entity m_ally_hero;
     Entity m_enemy_hero;
 
+    int m_turn_counter;
+
 public:
     EntityManager();
 
@@ -35,6 +37,7 @@ public:
 signals:
     void TurnStart(bool my_turn);
     void TurnOver();
+    void GameOver();
 };
 
 #endif // ENTITYMANAGER_H

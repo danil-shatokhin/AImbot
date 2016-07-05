@@ -29,7 +29,10 @@
    <item>
     <widget class="QLabel" name="name_lbl">
      <property name="text">
-      <string>TextLabel</string>
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -45,7 +48,7 @@
      <item>
       <widget class="QLabel" name="atk_lbl">
        <property name="text">
-        <string>1</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -55,7 +58,7 @@
      <item>
       <widget class="QLabel" name="hp_lbl">
        <property name="text">
-        <string>1</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

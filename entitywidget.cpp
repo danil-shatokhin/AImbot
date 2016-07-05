@@ -6,13 +6,16 @@ EntityWidget::EntityWidget(QWidget *parent) :
     ui(new Ui::EntityWidget)
 {
     ui->setupUi(this);
+
+    m_entity = Entity();
+    ui->pushButton->setEnabled(false);
 }
 
 void EntityWidget::SetEntity(Entity entity)
 {
     m_entity = entity;
 
-    if (m_entity.GetTag("cardtype") == "MINION")
+    if (m_entity.GetTag("cardtype") == "minion")
     {
         ui->atk_lbl->setText(m_entity.GetTag("atk"));
         ui->hp_lbl->setText(m_entity.GetTag("health"));
@@ -30,6 +33,8 @@ void EntityWidget::SetEntity(Entity entity)
         ui->hp_lbl->setText("");
         ui->name_lbl->setText(m_entity.GetTag("cardtype"));
     }
+
+    ui->pushButton->setEnabled(true);
 }
 
 EntityWidget::~EntityWidget()

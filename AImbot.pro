@@ -17,15 +17,17 @@ SOURCES += main.cpp\
     logreader.cpp \
     entitymanager.cpp \
     entity.cpp \
-    entitywidget.cpp
+    entitywidget.cpp \
+    actionexecutor.cpp
 
 HEADERS  += mainwindow.h \
     logreader.h \
     entitymanager.h \
     entity.h \
-    entitywidget.h
+    entitywidget.h \
+    actionexecutor.h
 
 FORMS    += mainwindow.ui \
     entitywidget.ui
 
-DISTFILES +=
+#DISTFILES +=
